@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>学習ページ</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+    }
+
+    /* サイドバー */
+    .sidebar {
+      width: 200px;
+      height: 100vh;
+      background: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    .sidebar button, .back-button {
+      margin: 10px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #34495e;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .sidebar button:hover, .back-button:hover {
+      background: #1abc9c;
+    }
+
+    /* メイン＋本エリア */
+    .content-area {
+      margin-left: 220px;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      width: calc(100% - 220px);
+    }
+
+    .main-content {
+      flex: 2;
+    }
+    .book-content {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      max-height: 90vh;
+      display: none; /* 最初は非表示 */
+      position: relative;
+    }
+
+    .book-content h2 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      background: #e74c3c;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .close-btn:hover {
+      background: #c0392b;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    /* チャットボックス */
+    #chat-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      height: 250px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+
+    /* 入力欄 */
+    #user-input {
+      width: 60%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .send-btn, .save-btn, .clear-btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: 5px;
+    }
+    .send-btn:hover, .save-btn:hover, .clear-btn:hover {
+      background: #2980b9;
+    }
+
+    /* 保存履歴 */
+    #saved-answers {
+      list-style: none;
+      padding: 0;
+    }
+    #saved-answers li {
+      background: #ecf0f1;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      border: none;
+      background: #e74c3c;
+      color: white;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+  </style>
+</head>
+<body class="page2">
+  <!-- サイドバー -->
+  <div class="sidebar">
+    <div class="sidebar-buttons">
+      <button onclick="showSection('chat')">質問する</button>
+      <button onclick="showSection('quiz')">問題を見る</button>
+      <button onclick="showSection('history')">保存した返事</button>
+      <button onclick="toggleBook()">本を表示</button>
+    </div>
+    <a href="index.html" class="back-button">スタートページに戻る</a>
+  </div>
+
+  <!-- メイン＋本エリア -->
+  <div class="content-area">
+    <!-- メインエリア -->
+    <div class="main-content">
+      <!-- ChatGPTセクション -->
+      <div id="chat" class="section">
+        <h2>AIに質問する</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="質問を入力...">
+        <button class="send-btn" onclick="sendMessage()">送信</button>
+        <button class="save-btn" onclick="saveLastAnswer()">保存</button>
+        <button class="clear-btn" onclick="clearChat()">やり取りを消す</button>
+      </div>
+
+      <!-- 問題セクション -->
+      <div id="quiz" class="section" style="display:none;">
+        <h2>問題がここに表示されます</h2>
+        <p>ここに練習問題を載せることができます。</p>
+      </div>
+
+      <!-- 保存履歴セクション -->
+      <div id="history" class="section" style="display:none;">
+        <h2>保存した返事</h2>
+        <button class="clear-btn" onclick="clearAll()">全消去</button>
+        <ul id="saved-answers"></ul>
+      </div>
+    </div>
+
+    <!-- 本の内容（表示/非表示切替） -->
+    <div id="book" class="book-content">
+      <button class="close-btn" onclick="toggleBook()">閉じる</button>
+      <h2>本の内容</h2>
+      <p>
+        これはサンプルの本のテキストです。<br><br>
+        「学ぶことは未来をつくる第一歩です。AIと一緒に本を読み解き、理解を深めましょう。」<br><br>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let lastAnswer = ""; // AIの直近の返答を保持
+    let savedAnswers = JSON.parse(localStorage.getItem("savedAnswers")) || [];
+
+    // セクション切替
+    function showSection(id) {
+      document.querySelectorAll('.main-content .section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+
+      if (id === "history") {
+        renderSavedAnswers();
+      }
+    }
+
+    // 本の表示/非表示切替
+    function toggleBook() {
+      const book = document.getElementById("book");
+      book.style.display = (book.style.display === "none" || book.style.display === "") ? "block" : "none";
+    }
+
+    // ChatGPT API 呼び出し（今はダミー）
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value;
+      if (!message) return;
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<p><b>あなた:</b> ${message}</p>`;
+      input.value = "";
+
+      // ダミー返信
+      lastAnswer = "これはサンプルの返信です。保存ボタンを押すと履歴に残ります。";
+      chatBox.innerHTML += `<p><b>AI:</b> ${lastAnswer}</p>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // チャット履歴を消す
+    function clearChat() {
+      if (confirm("チャットのやり取りをすべて消去しますか？")) {
+        document.getElementById("chat-box").innerHTML = "";
+        lastAnswer = "";
+      }
+    }
+
+    // 返答を保存
+    function saveLastAnswer() {
+      if (!lastAnswer) return alert("保存する返答がありません。");
+      savedAnswers.push(lastAnswer);
+      localStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
+      alert("返答を保存しました！");
+    }
+
+    // 保存した返答を表示
+    function renderSavedAnswers() {
+      const list = document.getElementById("saved-answers");
+      list.innerHTML = "";
+      savedAnswers.forEach((ans, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = (index + 1) + ". " + ans +
+          ` <button class="delete-btn" onclick="deleteAnswer(${index})">削除</button>`;
+        list.appendChild(li);
+      });
+    }
+
+    // 個別削除
+    function deleteAnswer(index) {
+      savedAnswers.splice(index, 1);
+      localStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
+      renderSavedAnswers();
+    }
+
+    // 全削除
+    function clearAll() {
+      if (confirm("保存した返答をすべて消去しますか？")) {
+        savedAnswers = [];
+        localStorage.removeItem("savedAnswers");
+        renderSavedAnswers();
+      }
+    }
+  </script>
+</body>
+</html>
