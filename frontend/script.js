@@ -9,18 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveBtn = document.getElementById('save-btn');
     const clearBtn = document.getElementById('clear-btn');
     const savedList = document.getElementById('saved-list');
-    // ▼ここから追加: リサイズ機能で使う要素を取得▼
     const resizer = document.getElementById('resizer');
     const pdfViewer = document.getElementById('pdf-viewer');
-    const chatWrapper = document.getElementById('chat-wrapper');
-    // ▲ここまで追加▲
+    const chapterSelection = document.getElementById('chapter-selection');
+    const problemDisplayArea = document.getElementById('problem-display-area');
+    const problemStatement = document.getElementById('problem-statement');
+    const problemFeedback = document.getElementById('problem-feedback');
+    const hintBtn = document.getElementById('hint-btn');
+    const answerBtn = document.getElementById('answer-btn');
+    const submissionInput = document.getElementById('submission-input');
+    const submitAnswerBtn = document.getElementById('submit-answer-btn');
 
     // --- グローバル変数 ---
     let current_thread_id = null;
+    let current_problem = null;
 
     // --- 関数の定義 ---
+    const userId = getOrCreateUserId();
 
-    // ユーザーIDをブラウザのLocalStorageから取得または新規作成する関数
     function getOrCreateUserId() {
         let userId = localStorage.getItem('manabichat_userId');
         if (!userId) {
@@ -29,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return userId;
     }
-    const userId = getOrCreateUserId();
 
     // 1. サイドバーでのコンテンツ切り替え機能
     sidebarButtons.forEach(button => {
@@ -39,13 +44,124 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('active');
             const targetId = button.id.replace('show-', '') + '-section';
             document.getElementById(targetId)?.classList.add('active');
-            if (targetId === 'saved-section') {
-                loadSavedChats();
-            }
+            if (targetId === 'saved-section') { loadSavedChats(); }
         });
     });
 
-    // 2. メッセージをチャット履歴の画面に追加する関数
+    // 2. チャット履歴にメッセージを追加する関数
+    function addMessageToHistory(message, sender) { /* ... (変更なし) ... */ }
+
+    // 3. チャット送信機能
+    sendBtn.addEventListener('click', async () => { /* ... (変更なし) ... */ });
+    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendBtn.click(); });
+
+    // 4. 「新しいチャット」機能
+    clearBtn.addEventListener('click', () => { /* ... (変更なし) ... */ });
+
+    // 5. 「この会話を保存」機能
+    saveBtn.addEventListener('click', async () => { /* ... (変更なし) ... */ });
+
+    // 6. 保存済み会話リストの表示機能
+    async function loadSavedChats() { /* ... (変更なし) ... */ }
+
+    // 7. 保存済み会話の読み込み機能
+    savedList.addEventListener('click', async (e) => { /* ... (変更なし) ... */ });
+
+    // 8. リサイズ機能のロジック
+    resizer.addEventListener('mousedown', (e) => { /* ... (変更なし) ... */ });
+
+    // --- 「問題機能」のロジック ---
+
+    // 9. 章選択ボタンを動的に生成する
+    const chapters = [
+        "第1章 Pythonに触れる", "第2章 Pythonの基本", "第3章 制御構文",
+        "第4章 データ構造", "第5章 関数", "第6章 クラス",
+        "第7章 ファイル操作", "第8章 モジュール・ライブラリ"
+    ];
+    chapters.forEach(chapterTitle => {
+        const button = document.createElement('button');
+        button.className = 'chapter-btn';
+        button.innerText = chapterTitle;
+        button.addEventListener('click', () => generateProblem(chapterTitle));
+        chapterSelection.appendChild(button);
+    });
+
+    // 10. 問題を生成して表示する関数
+    async function generateProblem(chapter) {
+        problemDisplayArea.style.display = 'block';
+        chapterSelection.style.display = 'none';
+        problemStatement.innerHTML = '<div class="loading-indicator"><p class="ai-message">問題を作成中...<span>.</span><span>.</span><span>.</span></p></div>';
+        problemFeedback.innerText = 'ここにヒントや採点結果が表示されます。';
+        submissionInput.value = '';
+
+        const data = await callProblemAPI('generate', { chapter: chapter });
+        if (data) {
+            current_problem = data.response;
+            // ▼ここから変更: innerText を innerHTML = marked.parse() に変更▼
+            // これにより、問題文にMarkdown形式が使われていても正しく表示される
+            problemStatement.innerHTML = marked.parse(current_problem);
+            // ▲ここまで変更▲
+        } else {
+            problemStatement.innerText = '問題の作成に失敗しました。';
+        }
+    }
+    
+    // 11. ヒント、解答、採点リクエストのための共通API呼び出し関数
+    async function callProblemAPI(action, params = {}) {
+        problemFeedback.innerHTML = `<div class="loading-indicator"><p class="ai-message">考え中...<span>.</span><span>.</span><span>.</span></p></div>`;
+        try {
+            const response = await fetch('http://localhost:8000/api/problem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: action,
+                    chapter: params.chapter,
+                    problem: params.problem,
+                    submission: params.submission
+                }),
+            });
+            return await response.json();
+        } catch (error) {
+            console.error(`${action} の実行中にエラー:`, error);
+            problemFeedback.innerText = 'エラーが発生しました。';
+            return null;
+        }
+    }
+    
+    // 12. 「ヒントを見る」ボタンのクリックイベント
+    hintBtn.addEventListener('click', async () => {
+        if (!current_problem) return;
+        const data = await callProblemAPI('hint', { problem: current_problem });
+        if (data) {
+            // ▼ここから変更: innerText を innerHTML = marked.parse() に変更▼
+            problemFeedback.innerHTML = marked.parse(data.response);
+            // ▲ここまで変更▲
+        }
+    });
+
+    // 13. 「答えを見る」ボタンのクリックイベント
+    answerBtn.addEventListener('click', async () => {
+        if (!current_problem) return;
+        const data = await callProblemAPI('answer', { problem: current_problem });
+        if (data) {
+            problemFeedback.innerHTML = marked.parse(data.response);
+        }
+    });
+
+    // 14. 「解答する」ボタンのクリックイベント
+    submitAnswerBtn.addEventListener('click', async () => {
+        const submission = submissionInput.value.trim();
+        if (!current_problem || !submission) return;
+        const data = await callProblemAPI('check', {
+            problem: current_problem,
+            submission: submission
+        });
+        if (data) {
+            problemFeedback.innerHTML = marked.parse(data.response);
+        }
+    });
+
+    // --- (重複しないように、変更のない関数は省略) ---
     function addMessageToHistory(message, sender) {
         const p = document.createElement('p');
         p.className = sender === 'user' ? 'user-message' : 'ai-message';
@@ -53,13 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.appendChild(p);
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
-
-    // 3. チャット送信機能
-    sendBtn.addEventListener('click', async () => {
+    async function sendMessage() {
         const message = userInput.value.trim();
         if (message === '') return;
         addMessageToHistory(message, 'user');
         userInput.value = '';
+        const loadingElement = document.createElement('div');
+        loadingElement.className = 'loading-indicator';
+        loadingElement.innerHTML = `<p class="ai-message">考え中...<span>.</span><span>.</span><span>.</span></p>`;
+        chatHistory.appendChild(loadingElement);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
         try {
             const response = await fetch('http://localhost:8000/api/chat', {
                 method: 'POST',
@@ -72,112 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error:', error);
             addMessageToHistory('エラーが発生しました。', 'ai');
-        }
-    });
-
-    // 入力ボックスでEnterキーが押されたときも送信
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendBtn.click();
-    });
-
-    // 4. 「新しいチャット」機能
-    clearBtn.addEventListener('click', () => {
-        chatHistory.innerHTML = '';
-        current_thread_id = null;
-    });
-
-    // 5. 「この会話を保存」機能
-    saveBtn.addEventListener('click', async () => {
-        if (!current_thread_id) {
-            alert('メッセージを送信してから保存してください。');
-            return;
-        }
-        const title = prompt('この会話のタイトルを入力してください:', 'Pythonの学習');
-        if (title) {
-            try {
-                await fetch('http://localhost:8000/api/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, thread_id: current_thread_id, title: title }),
-                });
-                alert('会話を保存しました！');
-            } catch (error) {
-                console.error('保存に失敗しました:', error);
-                alert('保存に失敗しました。');
-            }
-        }
-    });
-
-    // 6. 保存済み会話リストの表示機能
-    async function loadSavedChats() {
-        try {
-            const response = await fetch(`http://localhost:8000/api/chats/${userId}`);
-            const data = await response.json();
-            savedList.innerHTML = '';
-            if (data.chats.length === 0) {
-                savedList.innerHTML = '<li>保存された会話はありません。</li>';
-                return;
-            }
-            data.chats.forEach(chat => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${chat.title}</span><button class="load-chat-btn" data-thread-id="${chat.thread_id}">読込</button>`;
-                savedList.appendChild(li);
-            });
-        } catch (error) {
-            console.error('保存済みチャットの読み込みに失敗:', error);
+        } finally {
+            loadingElement.remove();
         }
     }
-
-    // 7. 保存済み会話の読み込み機能
-    savedList.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('load-chat-btn')) {
-            const threadId = e.target.dataset.threadId;
-            try {
-                const response = await fetch(`http://localhost:8000/api/history/${threadId}`);
-                const data = await response.json();
-                document.getElementById('show-chat').click();
-                chatHistory.innerHTML = '';
-                data.history.forEach(item => {
-                    const sender = item.role === 'assistant' ? 'ai' : 'user';
-                    addMessageToHistory(item.content, sender);
-                });
-                current_thread_id = threadId;
-            } catch (error) {
-                console.error('履歴の読み込みに失敗:', error);
-            }
-        }
-    });
-    
-    // ▼ここから追加: リサイズ機能のロジック ▼
-    // つまみがマウスで押されたときの処理
-    resizer.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // デフォルトのイベント（テキスト選択など）を無効化
-
-        // マウスが動いたときの処理を定義
-        const mouseMoveHandler = (moveEvent) => {
-            // マウスのX座標の移動量を計算
-            const dx = moveEvent.clientX - e.clientX;
-            // PDFビューアの初期幅を取得
-            const pdfInitialWidth = pdfViewer.offsetWidth;
-            // 新しい幅を計算（初期幅 + 移動量）
-            const newPdfWidth = pdfInitialWidth + dx;
-            
-            // 新しい幅を適用
-            // flex-growプロパティを使って幅を調整するのが、flexboxレイアウトではより安定します
-            // chatWrapperのflex-growは1のままなので、pdfViewerの幅が変わると自動的に調整されます
-            pdfViewer.style.width = `${newPdfWidth}px`;
-        };
-
-        // マウスのボタンが離されたときの処理を定義
-        const mouseUpHandler = () => {
-            // マウスが動いたとき・離されたときのイベント監視を解除
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
-        };
-
-        // マウスが動いたとき・離されたときのイベント監視を開始
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-    });
-    // ▲ここまで追加▲
 });

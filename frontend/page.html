@@ -24,10 +24,7 @@
 
             <section id="chat-section" class="content-section active">
                 <div class="chat-view-container">
-                    <div id="pdf-viewer">
-                        <embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" />
-                    </div>
-
+                    <div id="pdf-viewer"><embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" /></div>
                     <div id="resizer" class="resizer"></div>
                     <div id="chat-wrapper">
                         <h2>AIに質問する</h2>
@@ -43,10 +40,28 @@
             </section>
 
             <section id="problems-section" class="content-section">
-                <h2>問題がここに表示されます</h2>
-                <p>ここに推奨問題を載せることができます。</p>
-            </section>
+                <h2>章を選んで問題に挑戦しよう</h2>
 
+                <div id="chapter-selection" class="chapter-grid">
+                    </div>
+
+                <div id="problem-display-area" style="display: none;">
+                    <h3>問題</h3>
+                    <div id="problem-statement" class="problem-box"></div>
+
+                    <h3>AIからのメッセージ</h3>
+                    <div id="problem-feedback" class="problem-box">ここにヒントや採点結果が表示されます。</div>
+
+                    <div id="problem-interaction-area">
+                        <div class="problem-buttons">
+                            <button id="hint-btn">ヒントを見る</button>
+                            <button id="answer-btn">答えを見る</button>
+                        </div>
+                        <textarea id="submission-input" placeholder="ここに解答コードを入力..."></textarea>
+                        <button id="submit-answer-btn">解答する</button>
+                    </div>
+                </div>
+            </section>
             <section id="saved-section" class="content-section">
                 <h2>保存した会話</h2>
                 <ul id="saved-list"></ul>
