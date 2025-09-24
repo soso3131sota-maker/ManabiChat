@@ -1,219 +1,123 @@
-/* --- 基本設定 --- */
-/* bodyとhtml要素のスタイルを設定 */
+/* --- 共通スタイル --- */
+/* bodyとhtml要素の基本スタイルを設定 */
 body,
 html {
-    font-family: sans-serif;
-    /* フォントを指定 */
-    height: 100%;
-    /* 高さを画面全体に */
-    margin: 0;
-    /* 余白をなくす */
-    overflow: hidden;
-    /* はみ出した部分を隠し、スクロールバーを非表示に */
+    margin: 0; /* 余白をなくす */
+    padding: 0; /* 内側の余白をなくす */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* 基本のフォントを指定 */
+    color: #333; /* 文字色を濃い灰色に */
+    height: 100%; /* 高さを画面全体に */
+    box-sizing: border-box; /* paddingとborderをwidth/heightに含めて計算 */
+    /* ▼ここから追加: ユーザーがテキストを選択できないようにして、スムーズなドラッグを実現 ▼ */
+    user-select: none;
+    /* ▲ここまで追加▲ */
+}
+/* aタグ（リンク）の基本スタイル */
+a {
+    text-decoration: none; /* 下線を消す */
+    color: inherit; /* 親要素の色を継承する */
+}
+/* buttonタグの基本スタイル */
+button {
+    cursor: pointer; /* カーソルを指の形に */
+    border: none; /* 枠線をなくす */
+    padding: 10px 15px; /* 内側の余白 */
+    border-radius: 5px; /* 角を丸くする */
+    background-color: #007bff; /* 背景色を青に */
+    color: white; /* 文字色を白に */
+    font-size: 16px; /* 文字サイズ */
+    transition: opacity 0.2s; /* 透明度（opacity）の変化を滑らかに */
+}
+/* ボタンにマウスが乗ったときのスタイル */
+button:hover {
+    opacity: 0.9; /* 少しだけ透明にする */
 }
 
-/* --- 全体レイアウト --- */
-/* アプリケーション全体のコンテナのスタイル */
-#app-container {
-    display: flex;
-    /* 子要素を横並びにする (flexbox) */
-    height: 100vh;
-    /* 高さを画面の高さに合わせる */
+/* --- index.html (スタートページ) のスタイル --- */
+/* 全体を囲むコンテナのスタイル */
+.container {
+    text-align: center; /* 中身を中央揃えに */
+    padding: 40px 20px; /* 内側の余白 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* グラデーション背景 */
+    min-height: 100vh; /* 最低でも画面の高さいっぱいに広がる */
 }
-
-/* --- 左サイドバー --- */
-/* サイドバーのスタイル */
-#sidebar {
-    width: 280px;
-    /* 幅を固定 */
-    background-color: #f4f4f4;
-    /* 背景色を薄い灰色に */
-    border-right: 1px solid #ddd;
-    /* 右側に境界線 */
-    display: flex;
-    /* 子要素の配置をflexboxで管理 */
-    flex-direction: column;
-    /* 子要素を縦に並べる */
-    flex-shrink: 0;
-    /* サイドバーが縮まないように設定 */
-}
-
-/* サイドバーヘッダーのスタイル */
-#sidebar-header {
-    padding: 20px;
-    /* 内側の余白 */
-    border-bottom: 1px solid #ddd;
-    /* 下側に境界線 */
-}
-
-/* サイドバーヘッダー内のh2タグのスタイル */
-#sidebar-header h2 {
-    margin: 0;
-    /* 余白をなくす */
-    font-size: 18px;
-    /* 文字サイズ */
-}
-
-/* 保存済みチャットリストのスタイル */
-#saved-chats-list {
-    flex-grow: 1;
-    /* 残りの高さをすべて使う */
-    overflow-y: auto;
-    /* 縦方向にはみ出したらスクロールバーを表示 */
-}
-
-/* 保存済みチャット各項目のスタイル */
-.saved-chat-item {
-    padding: 15px 20px;
-    /* 内側の余白 */
-    cursor: pointer;
-    /* カーソルを指の形に */
-    border-bottom: 1px solid #e0e0e0;
-    /* 下側に薄い境界線 */
-    white-space: nowrap;
-    /* テキストを折り返さない */
-    overflow: hidden;
-    /* はみ出した部分を隠す */
-    text-overflow: ellipsis;
-    /* はみ出したテキストを...で表示 */
-}
-
-/* 各項目にマウスカーソルが乗ったときのスタイル */
-.saved-chat-item:hover {
-    background-color: #e9e9e9;
-    /* 背景色を少し濃くする */
-}
+/* ... (index.htmlに関するスタイルは変更なし) ... */
+.container header h1 { font-size: 4em; color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.container header p { font-size: 1.2em; color: #f0f0f0; margin: 10px 0 30px; }
+.container header h2 { font-size: 1.5em; color: white; margin-bottom: 40px; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+.book-card { display: block; perspective: 1000px; }
+.book-cover { height: 280px; background-color: #333; color: white; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: transform 0.6s; transform-style: preserve-3d; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.book-card:hover .book-cover { transform: rotateY(10deg); }
+.book-cover h3 { margin: 0; font-size: 1.8em; }
+.book-cover p { margin-top: 10px; font-size: 0.9em; opacity: 0.8; }
+.python { background: linear-gradient(45deg, #ffd343, #ff9e43); }
+.english { background: linear-gradient(45deg, #4facfe, #00f2fe); }
+.html-css { background: linear-gradient(45deg, #f06529, #29a9df); }
 
 
-/* --- ▼ここから変更: 中央PDFビューア --- */
-/* PDFビューアのコンテナのスタイル */
+/* --- page.html (学習ページ) のスタイル --- */
+.app-container { display: flex; height: 100vh; }
+.sidebar { width: 250px; background-color: #2c3e50; color: white; padding: 20px; display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar nav { flex-grow: 1; }
+.sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+.sidebar nav li button { display: block; width: 100%; text-align: left; background: none; color: #ecf0f1; padding: 15px; border-radius: 5px; font-size: 1em; margin-bottom: 10px; }
+.sidebar nav li button.active, .sidebar nav li button:hover { background-color: #34495e; }
+.back-link { display: block; text-align: center; padding: 10px; background-color: #34495e; border-radius: 5px; }
+.back-link:hover { background-color: #4a627a; }
+
+.main-content { flex-grow: 1; background-color: #f4f7f6; overflow-y: auto; height: 100vh; display: flex; }
+.content-section { display: none; width: 100%; height: 100%; box-sizing: border-box; }
+.content-section.active { display: flex; flex-direction: column; }
+.content-section > h2 { margin: 40px 40px 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; flex-shrink: 0; }
+
+/* --- PDFとチャットのレイアウト --- */
+#chat-section.active { display: flex; flex-direction: column; }
+.chat-view-container { display: flex; flex-grow: 1; height: 100%; overflow: hidden; }
+
+/* ▼ここから変更: PDFビューアのスタイル ▼ */
 #pdf-viewer {
-    width: 45%;
-    /* 幅を全体の45%に設定 */
-    height: 100vh;
-    /* 高さを画面全体に */
-    border-right: 1px solid #ddd;
-    /* 右側に境界線を追加 */
-    flex-shrink: 0;
-    /* PDFビューアが縮まないように設定 */
+    /* JavaScriptで幅を制御するため、固定幅やflex-basisを削除 */
+    min-width: 200px; /* 縮小できる最小幅 */
+    height: 100%;
 }
-/* --- ▲ここまで変更▲ --- */
+#pdf-viewer embed { width: 100%; height: 100%; }
+/* ▲ここまで変更▲ */
 
 
-/* --- 右側コンテンツ (チャット画面) --- */
-/* メインコンテンツエリアのスタイル */
-#main-content {
+/* ▼ここから追加: リサイズ用つまみのスタイル ▼ */
+.resizer {
+    width: 8px; /* つまみの幅 */
+    background-color: #c1c1c1; /* つまみの色 */
+    cursor: col-resize; /* カーソルを左右のリサイズアイコンに */
+    flex-shrink: 0; /* つまみが縮まないように */
+}
+.resizer:hover {
+    background-color: #007bff; /* マウスが乗ったら色を変更 */
+}
+/* ▲ここまで追加▲ */
+
+
+/* ▼ここから変更: チャットラッパーのスタイル ▼ */
+#chat-wrapper {
     flex-grow: 1;
-    /* 残りの幅をすべて使う */
-    display: flex;
-    /* 子要素の配置をflexboxで管理 */
-    flex-direction: column;
-    /* 子要素を縦に並べる */
-    min-width: 400px;
-    /* チャット画面の最小幅を確保 */
-}
-
-/* チャットヘッダーのスタイル */
-#chat-header {
-    display: flex;
-    /* 子要素を横並びに */
-    justify-content: space-between;
-    /* 両端に寄せる */
-    align-items: center;
-    /* 上下中央揃えに */
-    padding: 20px;
-    /* 内側の余白 */
-    border-bottom: 1px solid #ddd;
-    /* 下側に境界線 */
-}
-
-#chat-header h2 {
-    margin: 0;
-}
-
-#chat-header button {
-    margin-left: 10px;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-#chat-header button:hover {
-    background-color: #f0f0f0;
-}
-
-/* チャットコンテナ（メッセージと入力欄）のスタイル */
-#chat-container {
-    flex-grow: 1;
-    /* 残りの高さをすべて使う */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    /* はみ出しを隠す */
-    padding: 0 20px;
-    /* 左右の内側に余白 */
+    padding: 0 40px 40px 40px;
+    box-sizing: border-box;
+    min-width: 350px; /* 縮小できる最小幅 */
 }
+/* ▲ここまで変更▲ */
 
-/* チャットメッセージが表示されるボックスのスタイル */
-#chat-box {
-    flex-grow: 1;
-    /* 残りの高さをすべて使う */
-    overflow-y: auto;
-    /* 縦方向にはみ出したらスクロール */
-    padding: 20px 0;
-    /* 上下の内側に余白 */
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    /* メッセージ間の隙間 */
-}
+#chat-wrapper h2 { margin-top: 40px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+.chat-history { flex-grow: 1; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 20px; overflow-y: auto; background-color: white; }
+.chat-history p { margin: 0 0 15px; padding: 10px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
+.user-message { background-color: #e1f5fe; margin-left: auto; text-align: right; }
+.ai-message { background-color: #f1f1f1; margin-right: auto; }
+.chat-input-area { display: flex; gap: 10px; flex-shrink: 0; }
+.chat-input-area input[type="text"] { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
 
-/* 各メッセージ（吹き出し）の共通スタイル */
-.message {
-    padding: 10px 15px;
-    border-radius: 18px;
-    max-width: 80%;
-    word-wrap: break-word;
-    /* 長い単語を折り返す */
-}
-
-.user-message {
-    background-color: #007bff;
-    color: white;
-    align-self: flex-end;
-    /* 右寄せ */
-}
-
-.bot-message {
-    background-color: #e9e9eb;
-    color: black;
-    align-self: flex-start;
-    /* 左寄せ */
-}
-
-/* 入力欄のコンテナのスタイル */
-#input-container {
-    display: flex;
-    padding: 20px 0;
-    /* 上下の内側に余白 */
-}
-
-#user-input {
-    flex-grow: 1;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 10px 15px;
-    font-size: 16px;
-}
-
-#send-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    margin-left: 10px;
-    cursor: pointer;
-}
+/* --- 保存した会話セクションのスタイル --- */
+#saved-list { list-style: none; padding: 0 40px; }
+#saved-list li { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+#saved-list li button { background-color: #3498db; font-size: 14px; padding: 5px 10px; }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manabi.Chat - 学習ページ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><button id="show-chat" class="active">質問する</button></li>
+                    <li><button id="show-problems">問題を見る</button></li>
+                    <li><button id="show-saved">保存した会話</button></li>
+                </ul>
+            </nav>
+            <a href="index.html" class="back-link">スタートページに戻る</a>
+        </aside>
+
+        <main class="main-content">
+
+            <section id="chat-section" class="content-section active">
+                <div class="chat-view-container">
+                    <div id="pdf-viewer">
+                        <embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" />
+                    </div>
+
+                    <div id="resizer" class="resizer"></div>
+                    <div id="chat-wrapper">
+                        <h2>AIに質問する</h2>
+                        <div id="chat-history" class="chat-history"></div>
+                        <div class="chat-input-area">
+                            <input type="text" id="user-input" placeholder="質問を入力...">
+                            <button id="send-btn">送信</button>
+                            <button id="save-btn">この会話を保存</button>
+                            <button id="clear-btn">新しいチャット</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="problems-section" class="content-section">
+                <h2>問題がここに表示されます</h2>
+                <p>ここに推奨問題を載せることができます。</p>
+            </section>
+
+            <section id="saved-section" class="content-section">
+                <h2>保存した会話</h2>
+                <ul id="saved-list"></ul>
+            </section>
+
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
