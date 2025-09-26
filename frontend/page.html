@@ -6,13 +6,14 @@
     <title>Manabi.Chat - 学習ページ</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="app-container">
         <aside class="sidebar">
             <nav>
                 <ul>
-                    <li><button id="show-chat" class="active">質問する</button></li>
+                    <li><button id="show-learn" class="active">学習する</button></li>
+                    <li><button id="show-notes">学習ノートを見る</button></li>
+                    <li><button id="show-chat">質問する</button></li>
                     <li><button id="show-problems">問題を見る</button></li>
                     <li><button id="show-saved">保存した会話</button></li>
                 </ul>
@@ -21,8 +22,23 @@
         </aside>
 
         <main class="main-content">
+            <section id="learn-section" class="content-section active">
+                <h2>AIと対話しながら学習を進めよう</h2>
+                <div id="learn-chat-history" class="chat-history"></div>
+                <div class="chat-input-area">
+                    <button id="start-learning-btn">はじめよう！</button>
+                    <input type="text" id="learn-user-input" placeholder="メッセージを入力...">
+                    <button id="learn-send-btn">送信</button>
+                    <button id="create-note-btn" class="util-btn">学習ノートを作成</button>
+                </div>
+            </section>
 
-            <section id="chat-section" class="content-section active">
+            <section id="notes-section" class="content-section">
+                <h2>学習ノート一覧</h2>
+                <div id="notes-list"></div>
+            </section>
+
+            <section id="chat-section" class="content-section">
                 <div class="chat-view-container">
                     <div id="pdf-viewer"><embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" /></div>
                     <div id="resizer" class="resizer"></div>
@@ -41,17 +57,13 @@
 
             <section id="problems-section" class="content-section">
                 <h2>章を選んで問題に挑戦しよう</h2>
-
-                <div id="chapter-selection" class="chapter-grid">
-                    </div>
-
+                <div id="chapter-selection" class="chapter-grid"></div>
                 <div id="problem-display-area" style="display: none;">
+                    <button id="back-to-chapters-btn" class="back-button">← 章の選択に戻る</button>
                     <h3>問題</h3>
                     <div id="problem-statement" class="problem-box"></div>
-
                     <h3>AIからのメッセージ</h3>
                     <div id="problem-feedback" class="problem-box">ここにヒントや採点結果が表示されます。</div>
-
                     <div id="problem-interaction-area">
                         <div class="problem-buttons">
                             <button id="hint-btn">ヒントを見る</button>
@@ -62,15 +74,14 @@
                     </div>
                 </div>
             </section>
+
             <section id="saved-section" class="content-section">
                 <h2>保存した会話</h2>
                 <ul id="saved-list"></ul>
             </section>
-
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>
