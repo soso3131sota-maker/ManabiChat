@@ -1,87 +1,267 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manabi.Chat - 学習ページ</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>学習ページ</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+    }
+
+    /* サイドバー */
+    .sidebar {
+      width: 200px;
+      height: 100vh;
+      background: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    .sidebar button, .back-button {
+      margin: 10px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #34495e;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .sidebar button:hover, .back-button:hover {
+      background: #1abc9c;
+    }
+
+    /* メイン＋本エリア */
+    .content-area {
+      margin-left: 220px;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      width: calc(100% - 220px);
+    }
+
+    .main-content {
+      flex: 2;
+    }
+    .book-content {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      max-height: 90vh;
+      display: none; /* 最初は非表示 */
+      position: relative;
+    }
+
+    .book-content h2 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      background: #e74c3c;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .close-btn:hover {
+      background: #c0392b;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    /* チャットボックス */
+    #chat-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      height: 450px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background: #fafafa;
+      text-align: center;
+    }
+    .ai-message p { margin: 0.5em 0; }
+    
+    #start-btn {
+      background-color: #28a745;
+      padding: 12px 24px;
+      font-size: 18px;
+      margin-top: 185px;
+    }
+    #start-btn:hover {
+        background-color: #218838;
+    }
+
+    /* 入力欄 */
+    #user-input {
+      width: 60%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .send-btn, .save-btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: 5px;
+    }
+    .send-btn:hover, .save-btn:hover {
+      background: #2980b9;
+    }
+
+    /* 保存履歴 */
+    #saved-answers {
+      list-style: none;
+      padding: 0;
+    }
+    #saved-answers li {
+      background: #ecf0f1;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      border: none;
+      background: #e74c3c;
+      color: white;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    /* チャット吹き出し用のスタイル */
+    .message-container {
+      display: flex;
+      margin: 10px 0;
+      width: 100%;
+    }
+    .ai-message-container {
+      justify-content: flex-start;
+      position: relative; /* ▼▼▼【ここを追加】保存ボタンの位置の基準にする ▼▼▼ */
+    }
+    .user-message-container { justify-content: flex-end; }
+
+    .message-bubble {
+      max-width: 75%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+    .message-bubble p:first-child { margin-top: 0; }
+    .message-bubble p:last-child { margin-bottom: 0; }
+    .ai-message-container .message-bubble {
+      background-color: #e9e9eb;
+      color: #000;
+      border-top-left-radius: 5px;
+    }
+    .user-message-container .message-bubble {
+      background-color: #0b93f6;
+      color: white;
+      border-top-right-radius: 5px;
+    }
+
+    /* ▼▼▼【ここから追加】学習ノート保存ボタンのスタイル ▼▼▼ */
+    .save-to-note-btn {
+      position: absolute;
+      top: -5px;
+      right: 0px;
+      padding: 4px 8px;
+      font-size: 12px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      opacity: 0; /* 最初は非表示 */
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+    /* ホバー時にボタンを表示 */
+    .ai-message-container:hover .save-to-note-btn {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* ▲▲▲ 【ここまで追加】 ▲▲▲ */
+  </style>
 </head>
-<body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <nav>
-                <ul>
-                    <li><button id="show-learn" class="active">学習する</button></li>
-                    <li><button id="show-notes">学習ノートを見る</button></li>
-                    <li><button id="show-chat">質問する</button></li>
-                    <li><button id="show-problems">問題を見る</button></li>
-                    <li><button id="show-saved">保存した会話</button></li>
-                </ul>
-            </nav>
-            <a href="index.html" class="back-link">スタートページに戻る</a>
-        </aside>
-
-        <main class="main-content">
-            <section id="learn-section" class="content-section active">
-                <h2>AIと対話しながら学習を進めよう</h2>
-                <div id="learn-chat-history" class="chat-history"></div>
-                <div class="chat-input-area">
-                    <button id="start-learning-btn">はじめよう！</button>
-                    <input type="text" id="learn-user-input" placeholder="メッセージを入力...">
-                    <button id="learn-send-btn">送信</button>
-                    <button id="create-note-btn" class="util-btn">学習ノートを作成</button>
-                </div>
-            </section>
-
-            <section id="notes-section" class="content-section">
-                <h2>学習ノート一覧</h2>
-                <div id="notes-list"></div>
-            </section>
-
-            <section id="chat-section" class="content-section">
-                <div class="chat-view-container">
-                    <div id="pdf-viewer"><embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" /></div>
-                    <div id="resizer" class="resizer"></div>
-                    <div id="chat-wrapper">
-                        <h2>AIに質問する</h2>
-                        <div id="chat-history" class="chat-history"></div>
-                        <div class="chat-input-area">
-                            <input type="text" id="user-input" placeholder="質問を入力...">
-                            <button id="send-btn">送信</button>
-                            <button id="save-btn">この会話を保存</button>
-                            <button id="clear-btn">新しいチャット</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="problems-section" class="content-section">
-                <h2>章を選んで問題に挑戦しよう</h2>
-                <div id="chapter-selection" class="chapter-grid"></div>
-                <div id="problem-display-area" style="display: none;">
-                    <button id="back-to-chapters-btn" class="back-button">← 章の選択に戻る</button>
-                    <h3>問題</h3>
-                    <div id="problem-statement" class="problem-box"></div>
-                    <h3>AIからのメッセージ</h3>
-                    <div id="problem-feedback" class="problem-box">ここにヒントや採点結果が表示されます。</div>
-                    <div id="problem-interaction-area">
-                        <div class="problem-buttons">
-                            <button id="hint-btn">ヒントを見る</button>
-                            <button id="answer-btn">答えを見る</button>
-                        </div>
-                        <textarea id="submission-input" placeholder="ここに解答コードを入力..."></textarea>
-                        <button id="submit-answer-btn">解答する</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="saved-section" class="content-section">
-                <h2>保存した会話</h2>
-                <ul id="saved-list"></ul>
-            </section>
-        </main>
+<body class="page2">
+  <div class="sidebar">
+    <div class="sidebar-buttons">
+      <button onclick="showSection('chat')">学習する</button>
+      <button onclick="showSection('note')">学習ノートを見る</button>
+      <button onclick="showSection('quiz')">問題を見る</button>
+      <button onclick="toggleBook()">テキストを見る</button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script.js"></script>
+    <a href="index.html" class="back-button">スタートページに戻る</a>
+  </div>
+
+  <div class="content-area">
+    <div class="main-content">
+      <div id="chat" class="section">
+        <h2>AIと一緒に学習を進めよう</h2>
+        <div id="chat-box">
+            <button id="start-btn" class="send-btn" onclick="startChat()">はじめよう</button>
+        </div>
+        <input type="text" id="user-input" placeholder="質問を入力...">
+        <button class="send-btn" onclick="sendMessage()">送信</button>
+        <button class="save-btn" onclick="requestNoteCreation()">学習ノートを作る</button>
+      </div>
+
+      <div id="note" class="section" style="display:none;">
+        <h2>学習ノート</h2>
+        <button class="clear-btn" onclick="clearAll()">全消去</button>
+        <ul id="saved-answers"></ul>
+      </div>
+
+      <div id="quiz" class="section" style="display:none;">
+        <h2>問題がここに表示されます</h2>
+        <p>ここに練習問題を載せることができます。</p>
+      </div>
+      
+      </div>
+
+    <div id="book" class="book-content">
+      <button class="close-btn" onclick="toggleBook()">閉じる</button>
+      <h2>テキストの内容</h2>
+      <embed src="Python ゼロからはじめるプログラミング.pdf" type="application/pdf" width="100%" height="95%">
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
 </body>
 </html>
